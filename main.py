@@ -15,6 +15,8 @@ async def root():
 def get_data():
     return {"name": "Ishaque", "friendname": "Ahmed, Salman, Sarwan, Anshal"}
 
+# creating post request
+
 
 @app.post("/createpost")
 def get_post():
