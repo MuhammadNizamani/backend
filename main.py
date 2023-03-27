@@ -8,7 +8,7 @@ app = FastAPI()
 async def root():
     return {"message": "trying to create FastAPI"}
 
-# here I am going to running sample get data function
+# here I am going to running samples
 
 
 @app.get("/data")
