@@ -14,3 +14,8 @@ async def root():
 @app.get("/data")
 def get_data():
     return {"name": "Ishaque", "friendname": "Ahmed, Salman, Sarwan, Anshal"}
+
+
+@app.post("/createpost")
+def get_post():
+    return {"message": "post is created successfully"}
