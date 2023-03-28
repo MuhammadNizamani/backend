@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import FastAPI
 from fastapi.params import Body  # bofy is used for reciveing data from frontend
 from pydantic import BaseModel  # this libaray is for setting schema
@@ -9,6 +10,9 @@ app = FastAPI()
 class Post(BaseModel):
     title: str
     content: str
+    published: bool = True  # here user did not provide published then it will be true
+    # here i have created field which completly  optional
+    rating: Optional[int] = None
 
 # request come in get methnd and url "/"
 
@@ -28,6 +32,9 @@ def get_data():
 
 
 @app.post("/createpost")
-def get_post(new_post: Post):  # we want payload has title and content
-    print(new_post.title)
-    return {"new_message": "new post"}
+def get_post(post: Post):  # we want payload has title and content
+    print(post)  # new_post is a pydantic type it can be converted
+    print(post.dict())  # this convert pydantic in python dictionary
+
+    # i am sending data back data is python dict
+    return {"new_message": post}
