@@ -39,8 +39,9 @@ def get_posts():
 # creating post request
 
 
-@app.post("/posts")
-def get_post(post: Post):  # we want payload has title and content
+# chnaging defualt status to create status which 201
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
+def create_post(post: Post):  # we want payload has title and content
     # print(post.dict())  # this convert pydantic in python dictionary
     post_dict = post.dict()
     post_dict['id'] = randrange(1, 2000000)
