@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from fastapi.params import Body  # bofy is used for reciveing data from frontend
 from pydantic import BaseModel  # this libaray is for setting schema
 # couse I can create random  ID couse I am not using DB right now
@@ -35,15 +35,6 @@ def get_posts():
 
 # here I am going to running samples
 
-# follwing method is for getting one user only
-
-
-@app.get("/posts/{id}")  # we are using path parameter
-def get_post(id):
-    # should convert id into int becaue path parameter give us id in string
-    post = find_post(int(id))
-    return {"post_detail": post}
-
 
 # creating post request
 
@@ -57,3 +48,17 @@ def get_post(post: Post):  # we want payload has title and content
 
     # i am sending data back data is python dict
     return {"new_message": post_dict}
+
+# note for path parameter if we use other routes like /posts/new it will reffencce to the
+# /posts/{id}" rouate to we should always move path parameter function to the bottom
+
+# follwing method is for getting one user only
+
+
+@app.get("/posts/{id}")  # we are using path parameter
+def get_post(id: int, response: Response):  # here path parameter will convert into int
+    post = find_post(id)
+    if not post:  # if post not found then we are going to give 404 status to the server
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {"message": f"post with id {id} was not found"}
+    return {"post_detail": post}
