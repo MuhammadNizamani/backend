@@ -53,6 +53,7 @@ def find_index_post(id):
 
 @app.get("/posts")
 def get_posts():
+    post = cursor.execute("""SELECT * FROM posts """)
     return {"data": my_posts}
 
 # here I am going to running samples
