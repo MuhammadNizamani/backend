@@ -4,6 +4,11 @@ from fastapi.params import Body  # bofy is used for reciveing data from frontend
 from pydantic import BaseModel  # this libaray is for setting schema
 # couse I can create random  ID couse I am not using DB right now
 from random import randrange
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import time
+
+
 app = FastAPI()
 
 
@@ -14,7 +19,19 @@ class Post(BaseModel):
     content: str
     published: bool = True  # here user did not provide published then it will be true
     # here i have created field which completly  optional
-    rating: Optional[int] = None
+
+
+while True:
+    try:
+        conn = psycopg2.connect(host='localhost', database='fastapi', user='postgres',
+                                password='admin', cursor_factory=RealDictCursor)
+        cursor = conn.cursor()
+        print("Database connection was succesful!")
+        break
+    except Exception as error:
+        print("Database fail to connect")
+        print("error is ", error)
+        time.sleep(3)
 
 
 my_posts = [{"title": "6 sahur", "content": "I am fasting in ramzan", "id": 1},
