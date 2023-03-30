@@ -83,7 +83,9 @@ def create_post(post: Post):  # we want payload has title and content
 
 @app.get("/posts/{id}")  # we are using path parameter
 def get_post(id: int):  # here path parameter will convert into int
-    post = find_post(id)
+    cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
+    post = cursor.fetchone()
+
     if not post:  # if post not found then we are going to give 404 status to the server
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id {id} was not found")
