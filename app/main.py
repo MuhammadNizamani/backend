@@ -53,8 +53,9 @@ def find_index_post(id):
 
 @app.get("/posts")
 def get_posts():
-    post = cursor.execute("""SELECT * FROM posts """)
-    return {"data": my_posts}
+    cursor.execute("""SELECT * FROM posts """)
+    posts = cursor.fetchall()
+    return {"data": posts}
 
 # here I am going to running samples
 
@@ -66,12 +67,13 @@ def get_posts():
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_post(post: Post):  # we want payload has title and content
     # print(post.dict())  # this convert pydantic in python dictionary
-    post_dict = post.dict()
-    post_dict['id'] = randrange(1, 2000000)
-    my_posts.append(post_dict)
+    cursor.execute("""INSERT INTO posts(title, content, published) VALUES (%s, %s,%s) RETURNING * """,
+                   (post.title, post.content, post.published))
+    new_post = cursor.fetchone()
+    conn.commit()  # any time we need to insert data we have to commit it.
 
     # i am sending data back data is python dict
-    return {"new_message": post_dict}
+    return {"new_message": new_post}
 
 # note for path parameter if we use other routes like /posts/new it will reffencce to the
 # /posts/{id}" rouate to we should always move path parameter function to the bottom
