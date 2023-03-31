@@ -115,7 +115,9 @@ def delete_post(id: int):
 
 @app.get("/sqlalchemy")
 def test_post(db: Session = Depends(get_db)):
-    return {"status": "succes"}
+    posts = db.query(model.Post).all()
+
+    return {"post": posts}
 
 
 @app.put("/posts/{id}")
