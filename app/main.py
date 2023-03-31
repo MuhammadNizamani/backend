@@ -55,9 +55,10 @@ def find_index_post(id):
 
 
 @app.get("/posts")
-def get_posts():
-    cursor.execute("""SELECT * FROM posts """)
-    posts = cursor.fetchall()
+def get_posts(db: Session = Depends(get_db)):
+    # cursor.execute("""SELECT * FROM posts """)
+    # posts = cursor.fetchall()
+    posts = db.query(model.Post).all()
     return {"data": posts}
 
 # here I am going to running samples
@@ -68,14 +69,22 @@ def get_posts():
 
 # chnaging defualt status to create status which 201
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_post(post: Post):  # we want payload has title and content
-    # print(post.dict())  # this convert pydantic in python dictionary
-    cursor.execute("""INSERT INTO posts(title, content, published) VALUES (%s, %s,%s) RETURNING * """,
-                   (post.title, post.content, post.published))
-    new_post = cursor.fetchone()
-    conn.commit()  # any time we need to insert data we have to commit it.
+# we want payload has title and content
+def create_post(post: Post, db: Session = Depends(get_db)):
+    # # print(post.dict())  # this convert pydantic in python dictionary
+    # cursor.execute("""INSERT INTO posts(title, content, published) VALUES (%s, %s,%s) RETURNING * """,
+    #                (post.title, post.content, post.published))
+    # new_post = cursor.fetchone()
+    # conn.commit()  # any time we need to insert data we have to commit it.
 
-    # i am sending data back data is python dict
+    # # i am sending data back data is python dict
+
+    new_post = model.Post(
+        title=post.title, content=post.content, published=post.published)
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+
     return {"new_message": new_post}
 
 # note for path parameter if we use other routes like /posts/new it will reffencce to the
