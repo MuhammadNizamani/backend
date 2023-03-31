@@ -94,9 +94,11 @@ def create_post(post: Post, db: Session = Depends(get_db)):
 
 
 @app.get("/posts/{id}")  # we are using path parameter
-def get_post(id: int):  # here path parameter will convert into int
-    cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
-    post = cursor.fetchone()
+# here path parameter will convert into int
+def get_post(id: int, db: Session = Depends(get_db)):
+    # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
+    # post = cursor.fetchone()
+    post = db.query(model.Post).filter(model.Post.id == id).first()
 
     if not post:  # if post not found then we are going to give 404 status to the server
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
