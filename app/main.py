@@ -1,14 +1,17 @@
 from typing import Optional
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi.params import Body  # bofy is used for reciveing data from frontend
 from pydantic import BaseModel  # this libaray is for setting schema
 # couse I can create random  ID couse I am not using DB right now
 from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from sqlalchemy.orm import Session
 import time
+from . import model
+from .database import engine, get_db
 
-
+model.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
@@ -108,6 +111,11 @@ def delete_post(id: int):
 
     # when you are deleting somthing you are not allow to pass some data in FastAPI
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@app.get("/sqlalchemy")
+def test_post(db: Session = Depends(get_db)):
+    return {"status": "succes"}
 
 
 @app.put("/posts/{id}")
