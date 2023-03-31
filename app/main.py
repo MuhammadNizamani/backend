@@ -78,9 +78,9 @@ def create_post(post: Post, db: Session = Depends(get_db)):
     # conn.commit()  # any time we need to insert data we have to commit it.
 
     # # i am sending data back data is python dict
-
-    new_post = model.Post(
-        title=post.title, content=post.content, published=post.published)
+    # we will use pydicnt to create post request
+    # print(**post.dict())  # we are going to use dictiony unpaking here
+    new_post = model.Post(**post.dict())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
