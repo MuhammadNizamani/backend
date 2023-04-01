@@ -50,7 +50,7 @@ def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts """)
     # posts = cursor.fetchall()
     posts = db.query(models.Post).all()
-    return {"data": posts}
+    return posts
 
 # here I am going to running samples
 
@@ -59,9 +59,9 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 # chnaging defualt status to create status which 201
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 # we want payload has title and content
-def create_post(post: schemas.Post, db: Session = Depends(get_db)):
+def create_post(post: schemas.CreatePost, db: Session = Depends(get_db)):
     # # print(post.dict())  # this convert pydantic in python dictionary
     # cursor.execute("""INSERT INTO posts(title, content, published) VALUES (%s, %s,%s) RETURNING * """,
     #                (post.title, post.content, post.published))
@@ -76,7 +76,7 @@ def create_post(post: schemas.Post, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_post)
 
-    return {"new_message": new_post}
+    return new_post
 
 # note for path parameter if we use other routes like /posts/new it will reffencce to the
 # /posts/{id}" rouate to we should always move path parameter function to the bottom
@@ -96,7 +96,7 @@ def get_post(id: int, db: Session = Depends(get_db)):
                             detail=f"post with id {id} was not found")
         # response.status_code = status.HTTP_404_NOT_FOUND
         # return {"message": f"post with id {id} was not found"}
-    return {"post_detail": post}
+    return post
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -118,15 +118,8 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.get("/sqlalchemy")
-def test_post(db: Session = Depends(get_db)):
-    posts = db.query(models.Post).all()
-
-    return {"post": posts}
-
-
 @app.put("/posts/{id}")
-def update_post(id: int, updated_post: schemas.Post, db: Session = Depends(get_db)):
+def update_post(id: int, updated_post: schemas.CreatePost, db: Session = Depends(get_db)):
     # cursor.execute("""UPDATE posts SET title = %s , content = %s,
     # published = %s WHERE id =%s  RETURNING *""", (post.title, post.content, post.published, str(id),))
     # updated_post = cursor.fetchone()
@@ -139,4 +132,4 @@ def update_post(id: int, updated_post: schemas.Post, db: Session = Depends(get_d
     post_query.update(updated_post.dict(), synchronize_session=False)
     db.commit()
 
-    return {"data": post_query.first()}
+    return post_query.first()
