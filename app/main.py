@@ -1,27 +1,18 @@
 from typing import Optional
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi.params import Body  # bofy is used for reciveing data from frontend
-from pydantic import BaseModel  # this libaray is for setting schema
 # couse I can create random  ID couse I am not using DB right now
 from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from sqlalchemy.orm import Session
 import time
-from . import model
+from . import models, schemas
 from .database import engine, get_db
 
-model.Base.metadata.create_all(bind=engine)
+
+models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
-
-
-# here I have created post class which inherites basemodel which help me
-#  to set schema for post request
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True  # here user did not provide published then it will be true
-    # here i have created field which completly  optional
 
 
 while True:
@@ -58,7 +49,7 @@ def find_index_post(id):
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts """)
     # posts = cursor.fetchall()
-    posts = db.query(model.Post).all()
+    posts = db.query(models.Post).all()
     return {"data": posts}
 
 # here I am going to running samples
@@ -70,7 +61,7 @@ def get_posts(db: Session = Depends(get_db)):
 # chnaging defualt status to create status which 201
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 # we want payload has title and content
-def create_post(post: Post, db: Session = Depends(get_db)):
+def create_post(post: schemas.Post, db: Session = Depends(get_db)):
     # # print(post.dict())  # this convert pydantic in python dictionary
     # cursor.execute("""INSERT INTO posts(title, content, published) VALUES (%s, %s,%s) RETURNING * """,
     #                (post.title, post.content, post.published))
@@ -80,7 +71,7 @@ def create_post(post: Post, db: Session = Depends(get_db)):
     # # i am sending data back data is python dict
     # we will use pydicnt to create post request
     # print(**post.dict())  # we are going to use dictiony unpaking here
-    new_post = model.Post(**post.dict())
+    new_post = models.Post(**post.dict())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
@@ -98,7 +89,7 @@ def create_post(post: Post, db: Session = Depends(get_db)):
 def get_post(id: int, db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
     # post = cursor.fetchone()
-    post = db.query(model.Post).filter(model.Post.id == id).first()
+    post = db.query(models.Post).filter(models.Post.id == id).first()
 
     if not post:  # if post not found then we are going to give 404 status to the server
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -116,7 +107,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     # deleted_post = cursor.fetchone()
     # conn.commit
 
-    post = db.query(model.Post).filter(model.Post.id == id)
+    post = db.query(models.Post).filter(models.Post.id == id)
     if post.first() == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id {id} does not exist")
@@ -129,18 +120,18 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 @app.get("/sqlalchemy")
 def test_post(db: Session = Depends(get_db)):
-    posts = db.query(model.Post).all()
+    posts = db.query(models.Post).all()
 
     return {"post": posts}
 
 
 @app.put("/posts/{id}")
-def update_post(id: int, updated_post: Post, db: Session = Depends(get_db)):
+def update_post(id: int, updated_post: schemas.Post, db: Session = Depends(get_db)):
     # cursor.execute("""UPDATE posts SET title = %s , content = %s,
     # published = %s WHERE id =%s  RETURNING *""", (post.title, post.content, post.published, str(id),))
     # updated_post = cursor.fetchone()
     # conn.commit()
-    post_query = db.query(model.Post).filter(model.Post.id == id)
+    post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()
     if post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
