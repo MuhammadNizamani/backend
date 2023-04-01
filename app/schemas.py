@@ -15,11 +15,8 @@ class CreatePost(PostBase):
     pass
 
 
-class Post(BaseModel):
+class Post(PostBase):  # here i am going to extend PostBase class so I don't have to repeat some code
     id: int
-    title: str
-    content: str
-    published: bool
     created_at: datetime
 
     class Config:

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 from fastapi.params import Body  # bofy is used for reciveing data from frontend
 # couse I can create random  ID couse I am not using DB right now
@@ -45,7 +45,7 @@ def find_index_post(id):
 # request come in get methnd and url "/"
 
 
-@app.get("/posts")
+@app.get("/posts", response_model=List[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts """)
     # posts = cursor.fetchall()
@@ -84,7 +84,8 @@ def create_post(post: schemas.CreatePost, db: Session = Depends(get_db)):
 # follwing method is for getting one user only
 
 
-@app.get("/posts/{id}")  # we are using path parameter
+# we are using path parameter
+@app.get("/posts/{id}", response_model=schemas.Post)
 # here path parameter will convert into int
 def get_post(id: int, db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
@@ -118,7 +119,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.put("/posts/{id}")
+@app.put("/posts/{id}", response_model=schemas.Post)
 def update_post(id: int, updated_post: schemas.CreatePost, db: Session = Depends(get_db)):
     # cursor.execute("""UPDATE posts SET title = %s , content = %s,
     # published = %s WHERE id =%s  RETURNING *""", (post.title, post.content, post.published, str(id),))
@@ -133,3 +134,10 @@ def update_post(id: int, updated_post: schemas.CreatePost, db: Session = Depends
     db.commit()
 
     return post_query.first()
+
+
+# now on I am going to create functions for users table
+
+@app.post("/users", status_code=status.HTTP_201_CREATED)
+def create_user(db: Session = Depends(get_db)):
+    pass
