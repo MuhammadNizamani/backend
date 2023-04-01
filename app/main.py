@@ -114,7 +114,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     # cursor.execute(
     #     """DELETE FROM posts WHERE id = %s RETURNING *""", (str(id),))
     # deleted_post = cursor.fetchone()
-    # conn.commit()
+    # conn.commit
 
     post = db.query(model.Post).filter(model.Post.id == id)
     if post.first() == None:
