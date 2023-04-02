@@ -4,10 +4,15 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 # request come in get methnd and url "/"
 from typing import List
-router = APIRouter()
 
 
-@router.get("/posts", response_model=List[schemas.Post])
+router = APIRouter(prefix="/posts",  # I am using /posts everywhere so i make a prefix that handles that now i just need to write /
+                   # this will create a group in api doc for post opretion
+                   tags=["posts"]
+                   )
+
+
+@router.get("/", response_model=List[schemas.Post])
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts """)
     # posts = cursor.fetchall()
@@ -21,7 +26,7 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 # chnaging defualt status to create status which 201
-@router.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 # we want payload has title and content
 def create_post(post: schemas.CreatePost, db: Session = Depends(get_db)):
     # # print(post.dict())  # this convert pydantic in python dictionary
@@ -47,7 +52,7 @@ def create_post(post: schemas.CreatePost, db: Session = Depends(get_db)):
 
 
 # we are using path parameter
-@router.get("/posts/{id}", response_model=schemas.Post)
+@router.get("/{id}", response_model=schemas.Post)
 # here path parameter will convert into int
 def get_post(id: int, db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM posts WHERE id = %s""", (str(id)))
@@ -62,7 +67,7 @@ def get_post(id: int, db: Session = Depends(get_db)):
     return post
 
 
-@router.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int, db: Session = Depends(get_db)):
 
     # cursor.execute(
@@ -81,7 +86,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.put("/posts/{id}", response_model=schemas.Post)
+@router.put("/{id}", response_model=schemas.Post)
 def update_post(id: int, updated_post: schemas.CreatePost, db: Session = Depends(get_db)):
     # cursor.execute("""UPDATE posts SET title = %s , content = %s,
     # published = %s WHERE id =%s  RETURNING *""", (post.title, post.content, post.published, str(id),))
