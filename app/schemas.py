@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr  # this libaray is for setting schema
 from datetime import datetime
+from typing import Optional
 
 
 # here I have created post class which inherites basemodel which help me
@@ -40,3 +41,12 @@ class userOut(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    id: Optional[str] = None
