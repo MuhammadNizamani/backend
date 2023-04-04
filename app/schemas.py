@@ -19,6 +19,7 @@ class CreatePost(PostBase):
 class Post(PostBase):  # here i am going to extend PostBase class so I don't have to repeat some code
     id: int
     created_at: datetime
+    owner_id: int
 
     class Config:
         orm_mode = True
