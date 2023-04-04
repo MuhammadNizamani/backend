@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from .database import Base
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql.expression import text
+from sqlalchemy.orm import relationship
 
 
 class Post(Base):
@@ -15,6 +16,8 @@ class Post(Base):
                         nullable=False, server_default=text('now()'))
     owner_id = Column(Integer, ForeignKey(
         "users.id", ondelete="CASCADE"), nullable=False)
+    # here I am passing User class for getting data user using foring key logic it will retive user data who is logined in
+    owner = relationship("User")
 
 
 class User(Base):
