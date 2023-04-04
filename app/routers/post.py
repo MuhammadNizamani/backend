@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 # request come in get methnd and url "/"
 from typing import List
+from typing import Optional
 
 
 router = APIRouter(prefix="/posts",  # I am using /posts everywhere so i make a prefix that handles that now i just need to write /
@@ -13,10 +14,16 @@ router = APIRouter(prefix="/posts",  # I am using /posts everywhere so i make a 
 
 
 @router.get("/", response_model=List[schemas.Post])
-def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
+              limit: int = 10, skip: int = 0, search: Optional[str] = ""):  # query parameter is used
+
+    # in query parement if we want to use space it can be used with the help of the key %
+
     # cursor.execute("""SELECT * FROM posts """)
     # posts = cursor.fetchall()
-    posts = db.query(models.Post).all()
+    # using query parameter in sql query
+    posts = db.query(models.Post).filter(
+        models.Post.title.contains(search)).limit(limit).offset(skip).all()
     return posts
 
 # here I am going to running samples
