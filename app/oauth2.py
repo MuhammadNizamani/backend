@@ -1,10 +1,12 @@
-from jose import JWTError, jwt
+from jose import jwt
 from datetime import datetime, timedelta
 from . import schemas, database, models
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from .config import settings
+from pydantic import ValidationError
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 # secret key
@@ -32,7 +34,7 @@ def verify_access_token(token: str, credentials_exeception):
             raise credentials_exeception
 
         token_data = schemas.TokenData(id=id)
-    except JWTError:
+    except (jwt.JWTError, ValidationError):
         raise credentials_exeception
 
     return token_data

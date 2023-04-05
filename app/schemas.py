@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr  # this libaray is for setting schema
 from datetime import datetime
 from typing import Optional
+from pydantic.types import conint
 
 
 # here I have created post class which inherites basemodel which help me
@@ -52,3 +53,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[str] = None
+
+
+class Vote(BaseModel):
+    post_id: int
+    dir: conint(le=1)
