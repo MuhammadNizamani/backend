@@ -36,6 +36,14 @@ class Post(PostBase):  # here i am going to extend PostBase class so I don't hav
         orm_mode = True
 
 
+class PostOut(BaseModel):
+    Post: Post
+    Votes: int
+
+    class Config:
+        orm_mode = True
+
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str

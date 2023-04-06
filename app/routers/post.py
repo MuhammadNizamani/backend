@@ -5,15 +5,17 @@ from ..database import get_db
 # request come in get methnd and url "/"
 from typing import List
 from typing import Optional
+from sqlalchemy import func
 
 
 router = APIRouter(prefix="/posts",  # I am using /posts everywhere so i make a prefix that handles that now i just need to write /
                    # this will create a group in api doc for post opretion
-                   tags=["posts"]
+                   tags=["Posts"]
                    )
 
 
-@router.get("/", response_model=List[schemas.Post])
+@router.get("/", response_model=List[schemas.PostOut])
+# @router.get("/")
 def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
               limit: int = 10, skip: int = 0, search: Optional[str] = ""):  # query parameter is used
 
@@ -24,7 +26,14 @@ def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.
     # using query parameter in sql query
     posts = db.query(models.Post).filter(
         models.Post.title.contains(search)).limit(limit).offset(skip).all()
-    return posts
+
+    # I am going to perfrom join on the post table and vote table
+    # Note sqlalchemy uses inner join by defualt but we want to outter join by using follwing code
+    # this query would be about how to get number of votes on a given posts
+    result = db.query(models.Post, func.count(models.Vote.post_id).label("Votes")).join(
+        models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).all()
+
+    return result
 
 # here I am going to running samples
 
