@@ -1,0 +1,29 @@
+Alembic is a database migration tool which help to making changes in existing database
+for using alembic we need to intialize the alemibic my using 
+alembic init [name of the folder]
+then for setting your database you neeed to making somes changes in evn.py file which would inside alembic file
+and then changes somthin in alembic.ini file, after that alembic is ready to roll.
+how to use alembic 
+before creating table you neeb to create revison of that table by using following commond
+
+alembic revision -m "any message " like alembic revision -m "create posts table"
+
+how to use alembic upgrade ? use the following commond
+
+alembic upgrade [revison ID] like alembic upgrade b6bf507584c6 we can also use alembic upgrade head if our current revison is a head
+
+
+to check current revison use 
+alembic current
+for checking leatest revison we follwing command
+
+alembic head
+
+
+for downgradeing we use folloing command
+
+alembic downgrade [revison]
+of 
+alemic downgrade -1 or -2 any number we want
+for checking history in alembic use following command
+alembic history
