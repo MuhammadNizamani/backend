@@ -27,3 +27,9 @@ of
 alemic downgrade -1 or -2 any number we want
 for checking history in alembic use following command
 alembic history
+
+
+alembic has a --autogenerate which take a look at models file and check the diffrent and then it will fullfil those 
+for using this we use 
+alembic revision --autogenerate -m "auto vote" or message
+after that use alembic upgrade head
