@@ -1,4 +1,4 @@
-from app.calculation import add, subtract, multiply, BankAccount
+from app.calculation import add, subtract, multiply, BankAccount, InsufficientFunds
 import pytest
 
 # for using pytest file name should look like this test_anyname.py or anyname_test.py
@@ -65,6 +65,12 @@ def test_bank_transation(zero_bank_account, deposit, withdraw, total_ammout):
     zero_bank_account.deposit(deposit)
     zero_bank_account.withdraw(withdraw)
     assert zero_bank_account.balance == total_ammout
+
+
+def test_insuffint_fund(bank_account):
+    # with help of this you can tell pytest this function is expecting Exception
+    with pytest.raises(InsufficientFunds):
+        bank_account.withdraw(200)
 
 
 # for pytest to print print statemt use -s for more detail use -v then use the commad pytest -v -s
